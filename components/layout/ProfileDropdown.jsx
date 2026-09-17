@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
 import { Portal } from "@/components/common/Portal";
@@ -17,6 +18,7 @@ import {
 } from "@/components/common/Icons";
 
 export function ProfileDropdown({ isOpen, onClose }) {
+  const router = useRouter();
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
   const dropdownRef = useRef(null);
   const [isMobileScreen, setIsMobileScreen] = useState(false);
@@ -47,11 +49,16 @@ export function ProfileDropdown({ isOpen, onClose }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Close when clicking outside desktop dropdown
+  // Close when clicking outside desktop dropdown (DESKTOP ONLY)
   useEffect(() => {
     if (!isOpen) return;
 
     const handleDocumentClick = (e) => {
+      // Never close from document click when on mobile (mobile sheet is in a Portal and uses its own backdrop)
+      if (typeof window !== "undefined" && window.innerWidth < 640) {
+        return;
+      }
+
       // If clicking the profile trigger button, let button click handler toggle it
       if (e.target && e.target.closest && e.target.closest("[data-profile-trigger]")) {
         return;
@@ -70,8 +77,15 @@ export function ProfileDropdown({ isOpen, onClose }) {
   const handleAuthAction = (message, redirectUrl) => {
     if (!isAuthenticated) {
       openAuthModal({ message, redirectUrl });
+    } else {
+      onClose();
+      if (redirectUrl) router.push(redirectUrl);
     }
+  };
+
+  const handleNavigate = (path) => {
     onClose();
+    router.push(path);
   };
 
   const handleLogout = () => {
@@ -259,6 +273,7 @@ export function ProfileDropdown({ isOpen, onClose }) {
             role="dialog"
             aria-modal="true"
             aria-label="Account Menu"
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Centered Drag Handle + Subtle Close Button */}
             <div className="relative flex items-center justify-center pt-3 pb-1 px-5">
@@ -349,17 +364,17 @@ export function ProfileDropdown({ isOpen, onClose }) {
                       <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
                     </button>
 
-                    <Link
-                      href="/contact"
-                      onClick={onClose}
-                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left"
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("/contact")}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <HelpCircleIcon className="h-4.5 w-4.5 text-[#666666]" />
                         <span>Contact Us</span>
                       </div>
                       <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                    </Link>
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -380,65 +395,65 @@ export function ProfileDropdown({ isOpen, onClose }) {
                   <div className="border-t border-[#f0f0f0]" />
 
                   <div className="divide-y divide-[#f5f5f5] text-left">
-                    <Link
-                      href="/account"
-                      onClick={onClose}
-                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("/account")}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <UserIcon className="h-4.5 w-4.5 text-[#666666]" />
                         <span>My Account</span>
                       </div>
                       <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                    </Link>
+                    </button>
 
-                    <Link
-                      href="/account/orders"
-                      onClick={onClose}
-                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("/account/orders")}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <PackageIcon className="h-4.5 w-4.5 text-[#666666]" />
                         <span>My Orders</span>
                       </div>
                       <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                    </Link>
+                    </button>
 
-                    <Link
-                      href="/wishlist"
-                      onClick={onClose}
-                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("/wishlist")}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <HeartIcon className="h-4.5 w-4.5 text-[#666666]" />
                         <span>Wishlist</span>
                       </div>
                       <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                    </Link>
+                    </button>
 
-                    <Link
-                      href="/account/addresses"
-                      onClick={onClose}
-                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("/account/addresses")}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <UserIcon className="h-4.5 w-4.5 text-[#666666]" />
                         <span>Saved Addresses</span>
                       </div>
                       <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                    </Link>
+                    </button>
 
-                    <Link
-                      href="/track-order"
-                      onClick={onClose}
-                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("/track-order")}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <TruckIcon className="h-4.5 w-4.5 text-[#666666]" />
                         <span>Track Order</span>
                       </div>
                       <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                    </Link>
+                    </button>
 
                     <button
                       type="button"

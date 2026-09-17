@@ -10,9 +10,8 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isHydrated, setIsHydrated] = useState(false);
-  const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const [authModal, setAuthModal] = useState({
-    isOpen: false,
+  const [activeOverlay, setActiveOverlay] = useState(null); // null | "account" | "login"
+  const [authDetails, setAuthDetails] = useState({
     message: "",
     redirectUrl: null,
     pendingAction: null,
@@ -34,7 +33,7 @@ export function AuthProvider({ children }) {
       if (storedPending) {
         const parsedPending = JSON.parse(storedPending);
         if (parsedPending) {
-          setAuthModal((prev) => ({
+          setAuthDetails((prev) => ({
             ...prev,
             pendingAction: parsedPending,
           }));
@@ -69,12 +68,22 @@ export function AuthProvider({ children }) {
   }, []);
 
   const openAccount = useCallback(() => {
-    setAuthModal((prev) => ({ ...prev, isOpen: false }));
-    setIsAccountOpen(true);
+    setActiveOverlay("account");
   }, []);
 
   const closeAccount = useCallback(() => {
-    setIsAccountOpen(false);
+    setActiveOverlay((prev) => (prev === "account" ? null : prev));
+  }, []);
+
+  const setIsAccountOpen = useCallback((open) => {
+    if (typeof open === "function") {
+      setActiveOverlay((prev) => {
+        const next = open(prev === "account");
+        return next ? "account" : null;
+      });
+    } else {
+      setActiveOverlay(open ? "account" : null);
+    }
   }, []);
 
   const openAuthModal = useCallback(({ message, redirectUrl, pendingAction }) => {
@@ -85,21 +94,22 @@ export function AuthProvider({ children }) {
         console.warn("Failed to persist pending action:", err);
       }
     }
-    // Automatically close account sheet when opening login modal
-    setIsAccountOpen(false);
-    setAuthModal({
-      isOpen: true,
+
+    setAuthDetails({
       message: message || "Sign in to view your orders and account details.",
       redirectUrl: redirectUrl || null,
       pendingAction: pendingAction || null,
     });
+    // Atomically set active overlay to login (closes account sheet if open)
+    setActiveOverlay("login");
   }, []);
 
   const closeAuthModal = useCallback(() => {
-    setAuthModal((prev) => ({
-      ...prev,
-      isOpen: false,
-    }));
+    setActiveOverlay((prev) => (prev === "login" ? null : prev));
+  }, []);
+
+  const closeAllOverlays = useCallback(() => {
+    setActiveOverlay(null);
   }, []);
 
   const login = useCallback(
@@ -120,12 +130,12 @@ export function AuthProvider({ children }) {
       setUser(customerData);
 
       // Grab current pending action before clearing
-      const pending = authModal.pendingAction;
+      const pending = authDetails.pendingAction;
       sessionStorage.removeItem(PENDING_ACTION_KEY);
 
       // Close modal
-      setAuthModal({
-        isOpen: false,
+      setActiveOverlay(null);
+      setAuthDetails({
         message: "",
         redirectUrl: null,
         pendingAction: null,
@@ -133,7 +143,7 @@ export function AuthProvider({ children }) {
 
       return { customer: customerData, pendingAction: pending };
     },
-    [authModal.pendingAction]
+    [authDetails.pendingAction]
   );
 
   const logout = useCallback(() => {
@@ -158,11 +168,25 @@ export function AuthProvider({ children }) {
     [user, openAuthModal]
   );
 
+  const authModal = useMemo(
+    () => ({
+      isOpen: activeOverlay === "login",
+      message: authDetails.message,
+      redirectUrl: authDetails.redirectUrl,
+      pendingAction: authDetails.pendingAction,
+    }),
+    [activeOverlay, authDetails]
+  );
+
+  const isAccountOpen = activeOverlay === "account";
+
   const value = useMemo(
     () => ({
       isAuthenticated: !!user,
       user,
       isHydrated,
+      activeOverlay,
+      setActiveOverlay,
       isAccountOpen,
       setIsAccountOpen,
       openAccount,
@@ -170,6 +194,7 @@ export function AuthProvider({ children }) {
       authModal,
       openAuthModal,
       closeAuthModal,
+      closeAllOverlays,
       login,
       logout,
       requireAuth,
@@ -177,12 +202,15 @@ export function AuthProvider({ children }) {
     [
       user,
       isHydrated,
+      activeOverlay,
       isAccountOpen,
+      setIsAccountOpen,
       openAccount,
       closeAccount,
       authModal,
       openAuthModal,
       closeAuthModal,
+      closeAllOverlays,
       login,
       logout,
       requireAuth,
