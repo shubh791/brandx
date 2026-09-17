@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "project": {
+    "name": "brandx-final",
+    "framework": "nextjs",
+    "type": "ecommerce"
+  },
+  "animationProfile": "advanced",
+  "skills": [
+    "mobile-first",
+    "ui-ux-pro",
+    "gpt-taste",
+    "seo",
+    "performance",
+    "accessibility"
+  ]
+}
