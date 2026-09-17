@@ -21,9 +21,14 @@ import { cn } from "@/lib/utils";
 
 export function Header({ className = "" }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { isAuthenticated, openAuthModal } = useAuth();
+  const {
+    isAuthenticated,
+    openAuthModal,
+    isAccountOpen,
+    setIsAccountOpen,
+    closeAccount,
+  } = useAuth();
   const { wishlistCount, isHydrated } = useWishlist();
   const closeTimeoutRef = useRef(null);
 
@@ -54,7 +59,7 @@ export function Header({ className = "" }) {
         clearTimeout(closeTimeoutRef.current);
         closeTimeoutRef.current = null;
       }
-      setIsProfileOpen(true);
+      setIsAccountOpen(true);
     }
   };
 
@@ -64,7 +69,7 @@ export function Header({ className = "" }) {
         clearTimeout(closeTimeoutRef.current);
       }
       closeTimeoutRef.current = setTimeout(() => {
-        setIsProfileOpen(false);
+        setIsAccountOpen(false);
         closeTimeoutRef.current = null;
       }, 200);
     }
@@ -75,7 +80,7 @@ export function Header({ className = "" }) {
       clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
     }
-    setIsProfileOpen((prev) => !prev);
+    setIsAccountOpen((prev) => !prev);
   };
 
   const handleWishlistClick = (e) => {
@@ -137,10 +142,10 @@ export function Header({ className = "" }) {
                   onClick={handleProfileClick}
                   aria-label={isAuthenticated ? "Your Account" : "Profile and Sign In"}
                   aria-haspopup="true"
-                  aria-expanded={isProfileOpen}
+                  aria-expanded={isAccountOpen}
                   className={cn(
                     "flex h-10 w-10 items-center justify-center rounded-full transition-colors cursor-pointer",
-                    isProfileOpen
+                    isAccountOpen
                       ? "bg-[#f5f5f5] text-[#000000]"
                       : "hover:bg-[#f5f5f5] hover:text-[#000000]"
                   )}
@@ -150,8 +155,8 @@ export function Header({ className = "" }) {
 
                 {/* Profile Dropdown / Mobile Bottom Sheet */}
                 <ProfileDropdown
-                  isOpen={isProfileOpen}
-                  onClose={() => setIsProfileOpen(false)}
+                  isOpen={isAccountOpen}
+                  onClose={closeAccount}
                 />
               </div>
 

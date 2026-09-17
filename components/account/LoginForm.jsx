@@ -88,13 +88,13 @@ export function LoginForm({
               Mobile Number
             </label>
 
-            <div className="relative flex rounded-[3px] border border-[#d1d1d1] focus-within:border-[#111111] focus-within:ring-1 focus-within:ring-[#111111] overflow-hidden transition-all bg-white">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] w-full min-w-0 rounded-[3px] border border-[#d1d1d1] focus-within:border-[#111111] focus-within:ring-1 focus-within:ring-[#111111] overflow-hidden transition-all bg-white box-border">
               {/* Prefix Badge */}
-              <div className="flex items-center px-3.5 bg-[#faf9f8] border-r border-[#eae8e3] text-sm font-semibold text-[#333333] select-none">
+              <div className="flex items-center justify-center px-3 sm:px-3.5 bg-[#faf9f8] border-r border-[#eae8e3] text-sm font-semibold text-[#333333] select-none shrink-0">
                 +91
               </div>
 
-              {/* Number Input */}
+              {/* Number Input (text-[16px] on mobile prevents iOS Safari auto-zoom, sm:text-sm on desktop) */}
               <input
                 id="mobile-number"
                 type="tel"
@@ -105,7 +105,7 @@ export function LoginForm({
                 value={mobileNumber}
                 onChange={handleInputChange}
                 placeholder="Enter 10-digit number"
-                className="w-full px-3.5 py-3 text-sm sm:text-base text-[#111111] placeholder:text-[#999999] focus:outline-none bg-white font-medium tracking-wide"
+                className="w-full min-w-0 px-3 sm:px-3.5 py-3 text-[16px] sm:text-sm text-[#111111] placeholder:text-[#999999] focus:outline-none bg-white font-medium tracking-wide box-border"
                 aria-invalid={!!error}
                 aria-describedby={error ? "mobile-error" : undefined}
                 autoFocus={isModal}

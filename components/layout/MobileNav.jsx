@@ -11,6 +11,7 @@ import {
 } from "@/components/common/Icons";
 import { useAuth } from "@/context/AuthContext";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
+import { Portal } from "@/components/common/Portal";
 import { NAVIGATION_CATEGORIES, ANNOUNCEMENT_TEXT } from "@/data/navigation";
 import { cn } from "@/lib/utils";
 
@@ -49,13 +50,14 @@ export function MobileNav({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50 transition-opacity duration-300"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+    <Portal>
+      <div className="fixed inset-0 z-50 lg:hidden">
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 bg-black/50 transition-opacity duration-300"
+          onClick={onClose}
+          aria-hidden="true"
+        />
 
       {/* Slide-in Drawer */}
       <div
@@ -187,5 +189,6 @@ export function MobileNav({ isOpen, onClose }) {
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

@@ -10,6 +10,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [authModal, setAuthModal] = useState({
     isOpen: false,
     message: "",
@@ -67,6 +68,15 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
+  const openAccount = useCallback(() => {
+    setAuthModal((prev) => ({ ...prev, isOpen: false }));
+    setIsAccountOpen(true);
+  }, []);
+
+  const closeAccount = useCallback(() => {
+    setIsAccountOpen(false);
+  }, []);
+
   const openAuthModal = useCallback(({ message, redirectUrl, pendingAction }) => {
     if (pendingAction) {
       try {
@@ -75,6 +85,8 @@ export function AuthProvider({ children }) {
         console.warn("Failed to persist pending action:", err);
       }
     }
+    // Automatically close account sheet when opening login modal
+    setIsAccountOpen(false);
     setAuthModal({
       isOpen: true,
       message: message || "Sign in to view your orders and account details.",
@@ -151,6 +163,10 @@ export function AuthProvider({ children }) {
       isAuthenticated: !!user,
       user,
       isHydrated,
+      isAccountOpen,
+      setIsAccountOpen,
+      openAccount,
+      closeAccount,
       authModal,
       openAuthModal,
       closeAuthModal,
@@ -161,6 +177,9 @@ export function AuthProvider({ children }) {
     [
       user,
       isHydrated,
+      isAccountOpen,
+      openAccount,
+      closeAccount,
       authModal,
       openAuthModal,
       closeAuthModal,

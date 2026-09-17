@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
+import { Portal } from "@/components/common/Portal";
 import {
   PackageIcon,
   HeartIcon,
@@ -241,217 +242,222 @@ export function ProfileDropdown({ isOpen, onClose }) {
       </div>
 
       {/* ========================================================= */}
-      {/* 2. MOBILE BOTTOM SHEET (Compact, Content-Driven Panel)    */}
+      {/* 2. MOBILE BOTTOM SHEET (Compact, Portaled to Body)        */}
       {/* ========================================================= */}
-      <div className="sm:hidden fixed inset-0 z-50 flex flex-col justify-end">
-        {/* Full Viewport Backdrop */}
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 z-0"
-          onClick={onClose}
-          aria-hidden="true"
-        />
+      <Portal>
+        <div className="sm:hidden">
+          {/* Full Viewport Backdrop */}
+          <div
+            className="fixed inset-0 z-[99] bg-black/60 backdrop-blur-xs transition-opacity duration-200"
+            onClick={onClose}
+            aria-hidden="true"
+          />
 
-        {/* Content-driven Bottom Sheet */}
-        <div
-          className="relative z-10 w-full max-h-[calc(100dvh-2.5rem)] overflow-y-auto overscroll-contain bg-white rounded-t-[22px] px-5 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] border-t border-[#eae8e3] shadow-2xl animate-in slide-in-from-bottom duration-200"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Account Menu"
-        >
-          {/* Centered Drag Handle + Subtle Close Button */}
-          <div className="relative flex items-center justify-center pt-1 pb-3">
-            <div className="w-10 h-1 bg-[#dcdcdc] rounded-full" />
-            <button
-              type="button"
-              onClick={onClose}
-              className="absolute right-0 top-0 flex h-8 w-8 items-center justify-center rounded-full text-[#777777] hover:text-black hover:bg-[#f2f2f2] transition-colors cursor-pointer"
-              aria-label="Close account menu"
-            >
-              <XIcon className="h-4 w-4" />
-            </button>
-          </div>
-
-          {!isAuthenticated ? (
-            /* Mobile Logged Out View */
-            <div className="space-y-3.5">
-              {/* Header */}
-              <div className="text-left">
-                <h3 className="text-base font-bold text-[#111111] tracking-tight">
-                  Welcome
-                </h3>
-                <p className="text-xs text-[#666666] mt-0.5 leading-snug">
-                  Sign in to access your orders, wishlist and account.
-                </p>
-              </div>
-
-              {/* Primary Action Button */}
+          {/* Content-driven Bottom Sheet (100% viewport width, zero transforms) */}
+          <div
+            className="fixed inset-x-0 bottom-0 z-[100] w-full max-w-none m-0 p-0 bg-white rounded-t-[22px] border-t border-[#eae8e3] shadow-2xl overflow-y-auto overscroll-contain max-h-[calc(100dvh-2rem)] box-border"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Account Menu"
+          >
+            {/* Centered Drag Handle + Subtle Close Button */}
+            <div className="relative flex items-center justify-center pt-3 pb-1 px-5">
+              <div className="w-10 h-1 bg-[#dcdcdc] rounded-full" />
               <button
                 type="button"
-                onClick={() =>
-                  handleAuthAction(
-                    "Sign in to access your account and continue shopping.",
-                    "/account"
-                  )
-                }
-                className="w-full py-3 px-4 bg-[#111111] hover:bg-black text-white text-xs font-bold uppercase tracking-wider rounded-[3px] transition-all shadow-xs active:scale-[0.99] cursor-pointer text-center"
+                onClick={onClose}
+                className="absolute right-4 top-2.5 flex h-8 w-8 items-center justify-center rounded-full text-[#777777] hover:text-black hover:bg-[#f2f2f2] transition-colors cursor-pointer"
+                aria-label="Close account menu"
               >
-                LOGIN / SIGN UP
+                <XIcon className="h-4 w-4" />
               </button>
-
-              {/* Divider */}
-              <div className="border-t border-[#f0f0f0]" />
-
-              {/* Touch-friendly rows (~48-52px height) */}
-              <div className="divide-y divide-[#f5f5f5] text-left">
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleAuthAction("Login to view your orders", "/account/orders")
-                  }
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <PackageIcon className="h-4.5 w-4.5 text-[#666666]" />
-                    <span>Orders</span>
-                  </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleAuthAction("Login to save your favourites", "/wishlist")
-                  }
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <HeartIcon className="h-4.5 w-4.5 text-[#666666]" />
-                    <span>Wishlist</span>
-                  </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleAuthAction("Login to track your order", "/track-order")
-                  }
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <TruckIcon className="h-4.5 w-4.5 text-[#666666]" />
-                    <span>Track Order</span>
-                  </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                </button>
-
-                <Link
-                  href="/contact"
-                  onClick={onClose}
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left"
-                >
-                  <div className="flex items-center gap-3">
-                    <HelpCircleIcon className="h-4.5 w-4.5 text-[#666666]" />
-                    <span>Contact Us</span>
-                  </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                </Link>
-              </div>
             </div>
-          ) : (
-            /* Mobile Logged In View */
-            <div className="space-y-3">
-              <div className="text-left pb-1">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#737373]">
-                  Account
-                </span>
-                <h3 className="text-base font-bold text-[#111111] tracking-tight">
-                  Hi, {user.name || user.firstName || `+91 ${user.mobile}`}
-                </h3>
-                <p className="text-[11px] text-[#666666] mt-0.5">
-                  BrandX Member
-                </p>
-              </div>
 
-              <div className="border-t border-[#f0f0f0]" />
-
-              <div className="divide-y divide-[#f5f5f5] text-left">
-                <Link
-                  href="/account"
-                  onClick={onClose}
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <UserIcon className="h-4.5 w-4.5 text-[#666666]" />
-                    <span>My Account</span>
+            {/* Inner Content Container: 100% width, max 480px, safe bottom padding */}
+            <div className="w-full max-w-[480px] mx-auto min-w-0 box-border px-5 pt-2 pb-[calc(20px+env(safe-area-inset-bottom,0px))]">
+              {!isAuthenticated ? (
+                /* Mobile Logged Out View */
+                <div className="space-y-3.5">
+                  {/* Header */}
+                  <div className="text-left">
+                    <h3 className="text-base font-bold text-[#111111] tracking-tight">
+                      Welcome
+                    </h3>
+                    <p className="text-xs text-[#666666] mt-0.5 leading-snug">
+                      Sign in to access your orders, wishlist and account.
+                    </p>
                   </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                </Link>
 
-                <Link
-                  href="/account/orders"
-                  onClick={onClose}
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <PackageIcon className="h-4.5 w-4.5 text-[#666666]" />
-                    <span>My Orders</span>
-                  </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                </Link>
+                  {/* Primary Action Button */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleAuthAction(
+                        "Sign in to access your account, orders and favourites.",
+                        "/account"
+                      )
+                    }
+                    className="w-full py-3.5 px-4 bg-[#111111] hover:bg-black text-white text-xs font-bold uppercase tracking-wider rounded-[3px] transition-all shadow-xs active:scale-[0.99] cursor-pointer text-center min-h-[46px]"
+                  >
+                    LOGIN / SIGN UP
+                  </button>
 
-                <Link
-                  href="/wishlist"
-                  onClick={onClose}
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <HeartIcon className="h-4.5 w-4.5 text-[#666666]" />
-                    <span>Wishlist</span>
-                  </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                </Link>
+                  {/* Divider */}
+                  <div className="border-t border-[#f0f0f0]" />
 
-                <Link
-                  href="/account/addresses"
-                  onClick={onClose}
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <UserIcon className="h-4.5 w-4.5 text-[#666666]" />
-                    <span>Saved Addresses</span>
-                  </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                </Link>
+                  {/* Touch-friendly rows (~48-52px height) */}
+                  <div className="divide-y divide-[#f5f5f5] text-left">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleAuthAction("Login to view your orders", "/account/orders")
+                      }
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <PackageIcon className="h-4.5 w-4.5 text-[#666666]" />
+                        <span>Orders</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
+                    </button>
 
-                <Link
-                  href="/track-order"
-                  onClick={onClose}
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <TruckIcon className="h-4.5 w-4.5 text-[#666666]" />
-                    <span>Track Order</span>
-                  </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
-                </Link>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleAuthAction("Login to save your favourites", "/wishlist")
+                      }
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <HeartIcon className="h-4.5 w-4.5 text-[#666666]" />
+                        <span>Wishlist</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
+                    </button>
 
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-semibold text-[#dc2626] active:bg-red-50 transition-colors text-left cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <RotateCcwIcon className="h-4.5 w-4.5 text-[#dc2626]" />
-                    <span>Log Out</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleAuthAction("Login to track your order", "/track-order")
+                      }
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <TruckIcon className="h-4.5 w-4.5 text-[#666666]" />
+                        <span>Track Order</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
+                    </button>
+
+                    <Link
+                      href="/contact"
+                      onClick={onClose}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <HelpCircleIcon className="h-4.5 w-4.5 text-[#666666]" />
+                        <span>Contact Us</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
+                    </Link>
                   </div>
-                  <ChevronRightIcon className="h-4 w-4 text-[#dc2626]/50" />
-                </button>
-              </div>
+                </div>
+              ) : (
+                /* Mobile Logged In View */
+                <div className="space-y-3">
+                  <div className="text-left pb-1">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#737373]">
+                      Account
+                    </span>
+                    <h3 className="text-base font-bold text-[#111111] tracking-tight">
+                      Hi, {user.name || user.firstName || `+91 ${user.mobile}`}
+                    </h3>
+                    <p className="text-[11px] text-[#666666] mt-0.5">
+                      BrandX Member
+                    </p>
+                  </div>
+
+                  <div className="border-t border-[#f0f0f0]" />
+
+                  <div className="divide-y divide-[#f5f5f5] text-left">
+                    <Link
+                      href="/account"
+                      onClick={onClose}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <UserIcon className="h-4.5 w-4.5 text-[#666666]" />
+                        <span>My Account</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
+                    </Link>
+
+                    <Link
+                      href="/account/orders"
+                      onClick={onClose}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <PackageIcon className="h-4.5 w-4.5 text-[#666666]" />
+                        <span>My Orders</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
+                    </Link>
+
+                    <Link
+                      href="/wishlist"
+                      onClick={onClose}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <HeartIcon className="h-4.5 w-4.5 text-[#666666]" />
+                        <span>Wishlist</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
+                    </Link>
+
+                    <Link
+                      href="/account/addresses"
+                      onClick={onClose}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <UserIcon className="h-4.5 w-4.5 text-[#666666]" />
+                        <span>Saved Addresses</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
+                    </Link>
+
+                    <Link
+                      href="/track-order"
+                      onClick={onClose}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-medium text-[#222222] hover:text-black active:bg-[#f9f9f9] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <TruckIcon className="h-4.5 w-4.5 text-[#666666]" />
+                        <span>Track Order</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#aaaaaa]" />
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-between min-h-[50px] py-3 text-xs sm:text-sm font-semibold text-[#dc2626] active:bg-red-50 transition-colors text-left cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <RotateCcwIcon className="h-4.5 w-4.5 text-[#dc2626]" />
+                        <span>Log Out</span>
+                      </div>
+                      <ChevronRightIcon className="h-4 w-4 text-[#dc2626]/50" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      </Portal>
     </>
   );
 }
