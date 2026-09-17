@@ -10,6 +10,7 @@ import {
   TruckIcon,
 } from "@/components/common/Icons";
 import { useAuth } from "@/context/AuthContext";
+import { useScrollLock } from "@/hooks/use-scroll-lock";
 import { NAVIGATION_CATEGORIES, ANNOUNCEMENT_TEXT } from "@/data/navigation";
 import { cn } from "@/lib/utils";
 
@@ -17,12 +18,12 @@ export function MobileNav({ isOpen, onClose }) {
   const [expandedCategories, setExpandedCategories] = useState({});
   const { isAuthenticated, openAuthModal } = useAuth();
 
-  // Body scroll lock & Escape key listener
+  // iOS-safe background scroll lock
+  useScrollLock(isOpen);
+
+  // Escape key listener
   useEffect(() => {
     if (!isOpen) return;
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
 
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -31,10 +32,7 @@ export function MobileNav({ isOpen, onClose }) {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   const toggleCategory = (id) => {
@@ -80,7 +78,7 @@ export function MobileNav({ isOpen, onClose }) {
         </div>
 
         {/* Categories List */}
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4">
           <div className="mb-2 px-2 text-[11px] font-bold uppercase tracking-widest text-[#888888]">
             Categories
           </div>

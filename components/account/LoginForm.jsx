@@ -56,107 +56,112 @@ export function LoginForm({
   };
 
   return (
-    <div className={cn("w-full mx-auto", isModal ? "max-w-md" : "max-w-md")}>
-      {/* Container Card */}
-      <div className="bg-white border border-[#eae8e3] rounded-[4px] p-6 sm:p-8 shadow-sm relative">
-        {/* Brand Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex justify-center mb-3.5">
-            <Logo size="md" />
-          </div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#111111]">
-            Welcome to BrandX
-          </h1>
-          <p className="text-xs sm:text-sm text-[#666666] mt-1.5 leading-normal">
-            {customMessage || "Sign in to access your account and continue shopping."}
-          </p>
+    <div
+      className={cn(
+        "w-full",
+        isModal
+          ? "px-5 sm:px-8 pt-2 sm:pt-7 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-8"
+          : "max-w-md mx-auto bg-white border border-[#eae8e3] rounded-[4px] p-6 sm:p-8 shadow-sm relative"
+      )}
+    >
+      {/* Brand Header */}
+      <div className="text-center mb-5 sm:mb-6">
+        <div className="inline-flex justify-center mb-2.5 sm:mb-3.5">
+          <Logo size="md" />
         </div>
-
-        {!isSuccess ? (
-          /* Mobile Number Entry Form */
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
-            <div>
-              <label
-                htmlFor="mobile-number"
-                className="block text-xs font-semibold text-[#333333] uppercase tracking-wider mb-1.5"
-              >
-                Mobile Number
-              </label>
-
-              <div className="relative flex rounded-[3px] border border-[#d1d1d1] focus-within:border-[#111111] focus-within:ring-1 focus-within:ring-[#111111] overflow-hidden transition-all">
-                {/* Prefix Badge */}
-                <div className="flex items-center px-3.5 bg-[#faf9f8] border-r border-[#eae8e3] text-xs sm:text-sm font-semibold text-[#333333] select-none">
-                  +91
-                </div>
-
-                {/* Number Input */}
-                <input
-                  id="mobile-number"
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel-national"
-                  pattern="[0-9]*"
-                  value={mobileNumber}
-                  onChange={handleInputChange}
-                  placeholder="Enter 10-digit number"
-                  className="w-full px-3.5 py-2.5 sm:py-3 text-sm text-[#111111] placeholder:text-[#999999] focus:outline-none bg-white font-medium tracking-wide"
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "mobile-error" : undefined}
-                  autoFocus={isModal}
-                />
-              </div>
-
-              {error && (
-                <p id="mobile-error" className="mt-1.5 text-xs text-[#dc2626] font-medium">
-                  {error}
-                </p>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full mt-2 py-3 px-4 rounded-[3px] bg-[#111111] hover:bg-black text-white text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-xs active:scale-[0.99] cursor-pointer"
-            >
-              Continue
-            </button>
-
-            {/* Reassurance Note */}
-            <div className="pt-3 border-t border-[#f0f0f0]">
-              <p className="text-[11.5px] sm:text-[12px] text-[#737373] text-center leading-relaxed">
-                You can browse and add items to your cart without signing in.
-              </p>
-            </div>
-          </form>
-        ) : (
-          /* Success confirmation */
-          <div className="space-y-4 text-center animate-in fade-in duration-200">
-            <div className="p-4 bg-[#faf9f8] border border-[#eae8e3] rounded-[3px]">
-              <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                <CheckIcon className="h-5 w-5" />
-              </div>
-              <h2 className="text-sm sm:text-base font-bold text-[#111111]">
-                Signed In Successfully
-              </h2>
-              <p className="text-xs text-[#666666] mt-1">
-                Connected as <span className="font-semibold text-[#111111]">+91 {mobileNumber}</span>
-              </p>
-            </div>
-
-            {!isModal && (
-              <Link
-                href={finalRedirectUrl || "/account"}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-[3px] bg-[#111111] hover:bg-black text-white text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-xs cursor-pointer"
-              >
-                <span>Continue</span>
-                <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-            )}
-          </div>
-        )}
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#111111]">
+          Welcome to BrandX
+        </h1>
+        <p className="text-xs sm:text-sm text-[#666666] mt-1 sm:mt-1.5 leading-relaxed max-w-xs mx-auto">
+          {customMessage || "Sign in to access your account, orders and favourites."}
+        </p>
       </div>
 
-      {/* Helpful Links Below Card */}
+      {!isSuccess ? (
+        /* Mobile Number Entry Form */
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <div>
+            <label
+              htmlFor="mobile-number"
+              className="block text-[11px] font-bold text-[#333333] uppercase tracking-wider mb-1.5 text-left"
+            >
+              Mobile Number
+            </label>
+
+            <div className="relative flex rounded-[3px] border border-[#d1d1d1] focus-within:border-[#111111] focus-within:ring-1 focus-within:ring-[#111111] overflow-hidden transition-all bg-white">
+              {/* Prefix Badge */}
+              <div className="flex items-center px-3.5 bg-[#faf9f8] border-r border-[#eae8e3] text-sm font-semibold text-[#333333] select-none">
+                +91
+              </div>
+
+              {/* Number Input */}
+              <input
+                id="mobile-number"
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel"
+                pattern="[0-9]*"
+                maxLength={10}
+                value={mobileNumber}
+                onChange={handleInputChange}
+                placeholder="Enter 10-digit number"
+                className="w-full px-3.5 py-3 text-sm sm:text-base text-[#111111] placeholder:text-[#999999] focus:outline-none bg-white font-medium tracking-wide"
+                aria-invalid={!!error}
+                aria-describedby={error ? "mobile-error" : undefined}
+                autoFocus={isModal}
+              />
+            </div>
+
+            {error && (
+              <p id="mobile-error" className="mt-1.5 text-xs text-[#dc2626] font-medium text-left">
+                {error}
+              </p>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full mt-2 py-3 sm:py-3.5 px-4 rounded-[3px] bg-[#111111] hover:bg-black text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all shadow-xs active:scale-[0.99] cursor-pointer text-center"
+          >
+            Continue
+          </button>
+
+          {/* Reassurance Note */}
+          <div className="pt-3 border-t border-[#f0f0f0]">
+            <p className="text-[11.5px] sm:text-xs text-[#737373] text-center leading-relaxed">
+              You can browse and add items to your cart without signing in.
+            </p>
+          </div>
+        </form>
+      ) : (
+        /* Success confirmation */
+        <div className="space-y-4 text-center animate-in fade-in duration-200">
+          <div className="p-4 bg-[#faf9f8] border border-[#eae8e3] rounded-[3px]">
+            <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+              <CheckIcon className="h-5 w-5" />
+            </div>
+            <h2 className="text-sm sm:text-base font-bold text-[#111111]">
+              Signed In Successfully
+            </h2>
+            <p className="text-xs text-[#666666] mt-1">
+              Connected as <span className="font-semibold text-[#111111]">+91 {mobileNumber}</span>
+            </p>
+          </div>
+
+          {!isModal && (
+            <Link
+              href={finalRedirectUrl || "/account"}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-[3px] bg-[#111111] hover:bg-black text-white text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-xs cursor-pointer"
+            >
+              <span>Continue</span>
+              <ArrowRightIcon className="h-4 w-4" />
+            </Link>
+          )}
+        </div>
+      )}
+
+      {/* Helpful Links Below Card on standalone page */}
       {!isModal && (
         <div className="mt-6 text-center space-y-2">
           <p className="text-xs text-[#737373]">
@@ -180,3 +185,4 @@ export function LoginForm({
     </div>
   );
 }
+

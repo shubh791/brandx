@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useScrollLock } from "@/hooks/use-scroll-lock";
 import {
   PackageIcon,
   HeartIcon,
@@ -17,6 +18,19 @@ import {
 export function ProfileDropdown({ isOpen, onClose }) {
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
   const dropdownRef = useRef(null);
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobileScreen(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Lock scroll ONLY on mobile bottom sheet (not on desktop hover)
+  useScrollLock(isOpen && isMobileScreen);
 
   // Close on Escape key
   useEffect(() => {
@@ -53,10 +67,10 @@ export function ProfileDropdown({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const handleAuthAction = (message, redirectUrl) => {
-    onClose();
     if (!isAuthenticated) {
       openAuthModal({ message, redirectUrl });
     }
+    onClose();
   };
 
   const handleLogout = () => {
@@ -230,16 +244,16 @@ export function ProfileDropdown({ isOpen, onClose }) {
       {/* 2. MOBILE BOTTOM SHEET (Compact, Content-Driven Panel)    */}
       {/* ========================================================= */}
       <div className="sm:hidden fixed inset-0 z-50 flex flex-col justify-end">
-        {/* Backdrop */}
+        {/* Full Viewport Backdrop */}
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 z-0"
           onClick={onClose}
           aria-hidden="true"
         />
 
         {/* Content-driven Bottom Sheet */}
         <div
-          className="relative w-full max-h-[80dvh] overflow-y-auto bg-white rounded-t-[20px] px-5 pt-3 pb-6 border-t border-[#eae8e3] shadow-2xl z-10 animate-in slide-in-from-bottom duration-200"
+          className="relative z-10 w-full max-h-[calc(100dvh-2.5rem)] overflow-y-auto overscroll-contain bg-white rounded-t-[22px] px-5 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] border-t border-[#eae8e3] shadow-2xl animate-in slide-in-from-bottom duration-200"
           role="dialog"
           aria-modal="true"
           aria-label="Account Menu"
