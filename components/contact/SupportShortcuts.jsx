@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { SUPPORT_SHORTCUTS, APPROVED_SUPPORT_INFO } from "@/data/contact";
-import { ArrowRightIcon } from "@/components/common/Icons";
+import { ArrowRightIcon, ShieldCheckIcon, HeadsetIcon } from "@/components/common/Icons";
 import { cn } from "@/lib/utils";
 
 export function SupportShortcuts({ className = "" }) {
+  const { grievanceOfficer } = APPROVED_SUPPORT_INFO;
+
   return (
     <div className={cn("flex flex-col gap-6", className)}>
       
@@ -40,13 +42,13 @@ export function SupportShortcuts({ className = "" }) {
         {/* FAQs Callout */}
         <div className="mt-5 pt-4.5 border-t border-[#e5e3dc] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span className="text-xs sm:text-sm text-[#555555]">
-            You may also find your answer in our FAQs.
+            Looking for quick answers?
           </span>
           <Link
             href="/faq"
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#111111] hover:underline underline-offset-4"
           >
-            <span>View FAQs</span>
+            <span>Browse FAQs</span>
             <ArrowRightIcon className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -54,9 +56,12 @@ export function SupportShortcuts({ className = "" }) {
 
       {/* 2. Direct Support Information */}
       <div className="bg-white p-5 sm:p-7 rounded-[2px] border border-[#e8e6e1]">
-        <h4 className="text-xs uppercase font-bold tracking-wider text-[#111111] mb-3.5">
-          Direct Support
-        </h4>
+        <div className="flex items-center gap-2 mb-3.5">
+          <HeadsetIcon className="w-4 h-4 text-[#111111]" />
+          <h4 className="text-xs uppercase font-bold tracking-wider text-[#111111]">
+            Customer Support
+          </h4>
+        </div>
 
         <dl className="flex flex-col gap-3 text-xs sm:text-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2.5 border-b border-[#f0eee9]">
@@ -72,7 +77,7 @@ export function SupportShortcuts({ className = "" }) {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2.5 border-b border-[#f0eee9]">
-            <dt className="text-[#777777]">Toll-Free Phone:</dt>
+            <dt className="text-[#777777]">Customer Care Phone:</dt>
             <dd>
               <a
                 href={`tel:${APPROVED_SUPPORT_INFO.phone.replace(/\s+/g, "")}`}
@@ -83,14 +88,94 @@ export function SupportShortcuts({ className = "" }) {
             </dd>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-0.5">
-            <dt className="text-[#777777]">Support Hours:</dt>
-            <dd className="font-medium text-[#111111]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2.5 border-b border-[#f0eee9]">
+            <dt className="text-[#777777]">Operating Hours:</dt>
+            <dd className="font-medium text-[#111111] text-left sm:text-right">
               {APPROVED_SUPPORT_INFO.hours}
+            </dd>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-0.5">
+            <dt className="text-[#777777]">Response Time:</dt>
+            <dd className="font-medium text-[#111111]">
+              {APPROVED_SUPPORT_INFO.responseTime}
             </dd>
           </div>
         </dl>
       </div>
+
+      {/* 3. Registered Merchant & Physical Address */}
+      <div className="bg-white p-5 sm:p-7 rounded-[2px] border border-[#e8e6e1]">
+        <h4 className="text-xs uppercase font-bold tracking-wider text-[#111111] mb-3.5">
+          Merchant & Business Information
+        </h4>
+
+        <dl className="flex flex-col gap-2.5 text-xs sm:text-sm">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 pb-2 border-b border-[#f0eee9]">
+            <dt className="text-[#777777] shrink-0">Brand / Store Name:</dt>
+            <dd className="font-semibold text-[#111111] sm:text-right">
+              {APPROVED_SUPPORT_INFO.brandName}
+            </dd>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 pb-2 border-b border-[#f0eee9]">
+            <dt className="text-[#777777] shrink-0">Legal Entity Name:</dt>
+            <dd className="font-medium text-[#111111] sm:text-right">
+              {APPROVED_SUPPORT_INFO.legalEntityName}
+            </dd>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 pt-0.5">
+            <dt className="text-[#777777] shrink-0">Physical Business Address:</dt>
+            <dd className="font-medium text-[#111111] sm:text-right leading-relaxed max-w-xs">
+              {APPROVED_SUPPORT_INFO.address.formatted}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      {/* 4. Grievance Redressal Officer (Indian E-Commerce Compliance) */}
+      {grievanceOfficer && (
+        <div className="bg-[#fcfbf9] p-5 sm:p-7 rounded-[2px] border border-[#e8e6e1]">
+          <div className="flex items-center gap-2 mb-2">
+            <ShieldCheckIcon className="w-4 h-4 text-[#111111]" />
+            <h4 className="text-xs uppercase font-bold tracking-wider text-[#111111]">
+              Grievance Redressal Officer
+            </h4>
+          </div>
+          <p className="text-xs text-[#666666] mb-3.5 leading-relaxed">
+            As per Consumer Protection (E-Commerce) Rules, 2020, you may contact our designated Grievance Officer for escalated concerns:
+          </p>
+
+          <dl className="flex flex-col gap-2 text-xs sm:text-sm">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 pb-2 border-b border-[#eceae4]">
+              <dt className="text-[#777777]">Officer Name & Role:</dt>
+              <dd className="font-medium text-[#111111] sm:text-right">
+                {grievanceOfficer.name} ({grievanceOfficer.designation})
+              </dd>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 pb-2 border-b border-[#eceae4]">
+              <dt className="text-[#777777]">Grievance Email:</dt>
+              <dd>
+                <a
+                  href={`mailto:${grievanceOfficer.email}`}
+                  className="font-medium text-[#111111] hover:text-[#e11d48] transition-colors"
+                >
+                  {grievanceOfficer.email}
+                </a>
+              </dd>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 pt-0.5">
+              <dt className="text-[#777777]">Resolution Window:</dt>
+              <dd className="font-medium text-[#111111] sm:text-right">
+                {grievanceOfficer.responseWindow}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      )}
 
     </div>
   );

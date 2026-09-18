@@ -1,17 +1,17 @@
-import { siteConfig } from "@/data/site-config";
+import { merchantConfig } from "@/data/merchant";
 
 /**
  * Contact Us & Customer Support Configuration
- * Strictly relies on approved store policies and support data.
+ * Centralized with merchantConfig for single-source accuracy and Razorpay compliance.
  */
 
 export const CONTACT_HERO_DATA = {
-  eyebrow: "CUSTOMER CARE",
-  heading: "How can we help?",
+  eyebrow: "CUSTOMER CARE & ASSISTANCE",
+  heading: "How can we help you today?",
   description:
-    "Questions about your order, delivery or return? We're here to help.",
-  faqLinkText: "View FAQs",
-  faqHref: "/faqs",
+    "Have questions about your order, shipping, returns, or product fits? Our customer care team is here to help.",
+  faqLinkText: "Browse FAQs",
+  faqHref: "/faq",
   image: {
     src: "/images/contact/contact-hero.webp",
     alt: "BrandX Customer Care & Order Packaging",
@@ -21,64 +21,71 @@ export const CONTACT_HERO_DATA = {
 export const QUICK_HELP_ITEMS = [
   {
     id: "order-status",
-    title: "ORDER STATUS",
-    description: "Track your order",
+    title: "TRACK ORDER",
+    description: "Real-time delivery status",
     href: "/track-order",
     icon: "search",
   },
   {
     id: "delivery",
-    title: "DELIVERY",
-    description: "Shipping information",
+    title: "SHIPPING POLICY",
+    description: "Timelines & coverage",
     href: "/shipping",
     icon: "truck",
   },
   {
     id: "return-exchange",
-    title: "RETURN / EXCHANGE",
-    description: "Returns & exchange",
+    title: "RETURNS & REFUNDS",
+    description: "Hassle-free returns",
     href: "/returns",
     icon: "rotate-ccw",
   },
   {
     id: "common-questions",
-    title: "COMMON QUESTIONS",
-    description: "View FAQs",
-    href: "/faqs",
+    title: "HELP CENTER",
+    description: "Frequently asked questions",
+    href: "/faq",
     icon: "help-circle",
   },
 ];
 
 export const HELP_TOPICS = [
   { value: "", label: "Select a topic..." },
-  { value: "order", label: "Order" },
-  { value: "delivery", label: "Delivery" },
-  { value: "return-exchange", label: "Return / Exchange" },
-  { value: "payment", label: "Payment" },
-  { value: "product", label: "Product" },
-  { value: "other", label: "Other" },
+  { value: "order", label: "Order Status & Modifications" },
+  { value: "delivery", label: "Delivery & Courier Tracking" },
+  { value: "return-exchange", label: "Return, Size Exchange & Refund" },
+  { value: "payment", label: "Payment, Invoicing & Billing" },
+  { value: "product", label: "Product Details & Sizing Advice" },
+  { value: "other", label: "Other General Inquiries" },
 ];
 
 export const SUPPORT_SHORTCUTS = [
   {
-    question: "Tracking an order?",
+    question: "Tracking your package?",
     actionText: "Track Order",
     href: "/track-order",
   },
   {
-    question: "Looking for delivery details?",
-    actionText: "Shipping Information",
+    question: "Looking for shipping details?",
+    actionText: "Shipping Policy",
     href: "/shipping",
   },
   {
-    question: "Need to return something?",
+    question: "Need to initiate a return or swap size?",
     actionText: "Returns & Exchange",
     href: "/returns",
   },
 ];
 
 export const APPROVED_SUPPORT_INFO = {
-  email: siteConfig.support?.email || "support@brandx.com",
-  phone: siteConfig.support?.phone || "+91 1800-000-0000",
-  hours: siteConfig.support?.hours || "Mon - Sat: 9:00 AM - 8:00 PM IST",
+  brandName: merchantConfig.brandName,
+  legalEntityName: merchantConfig.legalEntityName,
+  proprietorName: merchantConfig.proprietorName,
+  address: merchantConfig.address,
+  email: merchantConfig.support.email,
+  phone: merchantConfig.support.phone,
+  hours: merchantConfig.support.hours,
+  workingDays: merchantConfig.support.workingDays,
+  responseTime: merchantConfig.support.responseTime,
+  grievanceOfficer: merchantConfig.grievanceOfficer,
 };

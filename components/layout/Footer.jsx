@@ -27,22 +27,23 @@ const FOOTER_SECTIONS = [
   },
   {
     id: "help",
-    title: "Help",
+    title: "Help & Support",
     links: [
       { label: "Contact Us", href: "/contact" },
       { label: "Track Order", href: "/track-order" },
-      { label: "Returns & Exchange", href: "/returns" },
-      { label: "Shipping Info", href: "/shipping" },
+      { label: "Returns & Refund Policy", href: "/returns" },
+      { label: "Shipping Policy", href: "/shipping" },
       { label: "FAQs", href: "/faq" },
     ],
   },
   {
     id: "information",
-    title: "Information",
+    title: "Legal & Policies",
     links: [
-      { label: "About BrandX", href: "/about" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms & Conditions", href: "/terms" },
+      { label: "Shipping & Delivery", href: "/shipping" },
+      { label: "Returns & Refunds", href: "/returns" },
     ],
   },
   {

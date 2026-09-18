@@ -1,44 +1,39 @@
+import { merchantConfig } from "./merchant";
+
 /**
  * Global Site Configuration & Assurances
- * (No dummy product catalogs or fake products)
+ * Centrally connected with merchantConfig
  */
 
 export const siteConfig = {
-  name: "Brand X",
+  name: merchantConfig.brandName,
   tagline: "Fashion made for every day",
-  description: "Shop Brand X jeans, shirts, shoes, watches and everyday essentials.",
+  description: "Shop Brand X jeans, shirts, trousers, and everyday wardrobe essentials.",
   url: "https://brandx.store",
   ogImage: "/og-image.jpg",
-  links: {
-    instagram: "https://instagram.com",
-    twitter: "https://twitter.com",
-    facebook: "https://facebook.com",
-  },
+  links: merchantConfig.social,
+  merchant: merchantConfig,
   assurances: [
     {
       title: "Authentic products",
-      description: "100% genuine brands",
+      description: "100% genuine apparel",
       icon: "shield-check",
     },
     {
       title: "Easy returns",
-      description: "Hassle-free returns",
+      description: `Hassle-free ${merchantConfig.policies.returnWindowDescription}`,
       icon: "rotate-ccw",
     },
     {
       title: "Secure payments",
-      description: "Safe & trusted checkout",
+      description: "Safe & trusted checkout via Razorpay",
       icon: "lock",
     },
     {
       title: "BrandX support",
-      description: "Here when you need us",
+      description: "Dedicated customer care",
       icon: "headset",
     },
   ],
-  support: {
-    email: "support@brandx.com",
-    phone: "+91 1800-000-0000",
-    hours: "Mon - Sat: 9:00 AM - 8:00 PM IST",
-  },
+  support: merchantConfig.support,
 };
