@@ -12,6 +12,7 @@ import {
 } from "@/components/common/Icons";
 import { useAuth } from "@/context/AuthContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useCart } from "@/context/CartContext";
 import { AnnouncementBar } from "./AnnouncementBar";
 import { SearchBar } from "./SearchBar";
 import { DesktopNav } from "./DesktopNav";
@@ -29,10 +30,12 @@ export function Header({ className = "" }) {
     setIsAccountOpen,
     closeAccount,
   } = useAuth();
-  const { wishlistCount, isHydrated } = useWishlist();
+  const { wishlistCount, isHydrated: isWishlistHydrated } = useWishlist();
+  const { cartCount, isHydrated: isCartHydrated } = useCart();
   const closeTimeoutRef = useRef(null);
 
-  const hasWishlist = isAuthenticated && isHydrated && wishlistCount > 0;
+  const hasWishlist = isAuthenticated && isWishlistHydrated && wishlistCount > 0;
+  const hasCart = isCartHydrated && cartCount > 0;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -187,10 +190,24 @@ export function Header({ className = "" }) {
               {/* Cart / Shopping Bag Link */}
               <Link
                 href="/cart"
-                aria-label="Shopping bag"
+                aria-label={
+                  hasCart
+                    ? `Shopping bag, ${cartCount} ${
+                        cartCount === 1 ? "item" : "items"
+                      }`
+                    : "Shopping bag"
+                }
                 className="relative flex h-10 w-10 items-center justify-center rounded-full hover:bg-[#f5f5f5] hover:text-[#000000] transition-colors cursor-pointer"
               >
                 <ShoppingBagIcon className="h-5 w-5" />
+                {hasCart && (
+                  <span
+                    className="absolute top-1.5 right-1.5 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-[#111111] text-[10px] font-bold text-white leading-none shadow-xs"
+                    aria-hidden="true"
+                  >
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
               </Link>
             </div>
           </div>

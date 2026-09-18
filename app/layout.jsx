@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header, Footer } from "@/components/layout";
 import { AuthProvider } from "@/context/AuthContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { CartProvider } from "@/context/CartContext";
 import { LoginModal } from "@/components/account";
 
 const geistSans = Geist({
@@ -45,10 +46,12 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col bg-white text-[#111111]">
         <AuthProvider>
           <WishlistProvider>
-            <Header />
-            <div className="flex-1 flex flex-col bg-white">{children}</div>
-            <Footer />
-            <LoginModal />
+            <CartProvider>
+              <Header />
+              <div className="flex-1 flex flex-col bg-white">{children}</div>
+              <Footer />
+              <LoginModal />
+            </CartProvider>
           </WishlistProvider>
         </AuthProvider>
       </body>
