@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 /**
  * Custom hook to evaluate CSS media queries.
@@ -8,21 +8,21 @@ import { useEffect, useState } from "react";
  * @returns {boolean} - Matches state
  */
 export function useMediaQuery(query) {
-  const [matches, setMatches] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
+  const subscribe = (callback) => {
+    if (typeof window === "undefined") return () => {};
     const media = window.matchMedia(query);
-    setMatches(media.matches);
+    media.addEventListener("change", callback);
+    return () => media.removeEventListener("change", callback);
+  };
 
-    const listener = (event) => setMatches(event.matches);
-    media.addEventListener("change", listener);
+  const getSnapshot = () => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(query).matches;
+  };
 
-    return () => media.removeEventListener("change", listener);
-  }, [query]);
+  const getServerSnapshot = () => false;
 
-  return matches;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
 /**

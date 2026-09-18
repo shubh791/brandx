@@ -1,20 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+
+const emptySubscribe = () => () => {};
 
 /**
  * Universal SSR-safe React Portal component.
  * Renders children directly into document.body as a top-level application overlay.
  */
 export function Portal({ children }) {
-  const [mounted, setMounted] = useState(false);
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted || typeof document === "undefined" || !document.body) {
+  if (!isMounted || typeof document === "undefined" || !document.body) {
     return null;
   }
 

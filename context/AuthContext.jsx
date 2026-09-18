@@ -1,71 +1,66 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
 
 const AUTH_STORAGE_KEY = "brandx_customer_auth";
 const PENDING_ACTION_KEY = "brandx_pending_action";
 
 const AuthContext = createContext(null);
 
+let cachedUserRaw = null;
+let cachedUserParsed = null;
+
+function getUserSnapshot() {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (raw === cachedUserRaw) return cachedUserParsed;
+    cachedUserRaw = raw;
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      cachedUserParsed = parsed && parsed.mobile ? parsed : null;
+    } else {
+      cachedUserParsed = null;
+    }
+    return cachedUserParsed;
+  } catch {
+    return null;
+  }
+}
+
+function getServerUserSnapshot() {
+  return null;
+}
+
+function subscribeAuth(callback) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", callback);
+  window.addEventListener("brandx_auth_change", callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener("brandx_auth_change", callback);
+  };
+}
+
+const emptySubscribe = () => () => {};
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isHydrated, setIsHydrated] = useState(false);
+  const user = useSyncExternalStore(subscribeAuth, getUserSnapshot, getServerUserSnapshot);
+  const isHydrated = useSyncExternalStore(emptySubscribe, () => true, () => false);
+
   const [activeOverlay, setActiveOverlay] = useState(null); // null | "account" | "login"
   const [authDetails, setAuthDetails] = useState({
     message: "",
     redirectUrl: null,
     pendingAction: null,
   });
-
-  // Hydrate auth session from localStorage on client mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed && parsed.mobile) {
-          setUser(parsed);
-        }
-      }
-
-      // Check for pending action in session storage
-      const storedPending = sessionStorage.getItem(PENDING_ACTION_KEY);
-      if (storedPending) {
-        const parsedPending = JSON.parse(storedPending);
-        if (parsedPending) {
-          setAuthDetails((prev) => ({
-            ...prev,
-            pendingAction: parsedPending,
-          }));
-        }
-      }
-    } catch (err) {
-      console.warn("Failed to load customer auth session:", err);
-    } finally {
-      setIsHydrated(true);
-    }
-  }, []);
-
-  // Multi-tab sync for auth state
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === AUTH_STORAGE_KEY) {
-        try {
-          if (e.newValue) {
-            const parsed = JSON.parse(e.newValue);
-            setUser(parsed);
-          } else {
-            setUser(null);
-          }
-        } catch (err) {
-          console.warn("Failed to sync storage change for auth:", err);
-        }
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
 
   const openAccount = useCallback(() => {
     setActiveOverlay("account");
@@ -100,7 +95,6 @@ export function AuthProvider({ children }) {
       redirectUrl: redirectUrl || null,
       pendingAction: pendingAction || null,
     });
-    // Atomically set active overlay to login (closes account sheet if open)
     setActiveOverlay("login");
   }, []);
 
@@ -123,17 +117,22 @@ export function AuthProvider({ children }) {
 
       try {
         localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(customerData));
+        window.dispatchEvent(new Event("brandx_auth_change"));
       } catch (err) {
         console.warn("Failed to persist customer auth:", err);
       }
 
-      setUser(customerData);
+      let pending = authDetails.pendingAction;
+      try {
+        const stored = sessionStorage.getItem(PENDING_ACTION_KEY);
+        if (stored) {
+          pending = JSON.parse(stored);
+          sessionStorage.removeItem(PENDING_ACTION_KEY);
+        }
+      } catch {
+        // ignore
+      }
 
-      // Grab current pending action before clearing
-      const pending = authDetails.pendingAction;
-      sessionStorage.removeItem(PENDING_ACTION_KEY);
-
-      // Close modal
       setActiveOverlay(null);
       setAuthDetails({
         message: "",
@@ -150,10 +149,10 @@ export function AuthProvider({ children }) {
     try {
       localStorage.removeItem(AUTH_STORAGE_KEY);
       sessionStorage.removeItem(PENDING_ACTION_KEY);
+      window.dispatchEvent(new Event("brandx_auth_change"));
     } catch (err) {
       console.warn("Failed to clear auth session:", err);
     }
-    setUser(null);
   }, []);
 
   const requireAuth = useCallback(
